@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: users
+    expose:
+      - 5432
+    volumes:
+      - database:/var/lib/postgres/data
+
+  app:
+    build: .
+    command: npm run start
+    depends_on:
+      - db
+    ports:
+      - "80:3000"
+    volumes:
+      - .:/usr/src/app
+
+volumes:
+  database:
+    driver: local
