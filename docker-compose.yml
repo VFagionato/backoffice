@@ -2,16 +2,18 @@ version: '3'
 
 services:
   db:
-    image: postgres:14
+    image: mysql:latest
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: docker
-      POSTGRES_DB: users
-    expose:
-      - 5432
+      MYSQL_DATABASE: 'backoffice'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: 'mysql'
+      MYSQL_ROOT_PASSWORD: 'root_password'
+    ports:
+      - "3306:3306"
     volumes:
       - database:/var/lib/postgres/data
+      - ./db/init-db.sql:/docker-entrypoint-initdb.d/init.sql
 
   app:
     build: .
