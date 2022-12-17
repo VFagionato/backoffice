@@ -8,18 +8,22 @@ export interface UserProps {
   permission: number;
   phone: string;
   createdAt: Date;
-  deletedAt: Date | null;
+  deletedAt?: Date | null;
 }
 
 export class User {
   private _id: string;
   private props: UserProps;
 
-  constructor(props: Replace<UserProps, { createdAt?: Date }>, id?: string) {
+  constructor(
+    props: Replace<UserProps, { createdAt?: Date; deleteAt?: Date }>,
+    id?: string,
+  ) {
     this._id = id ?? randomUUID();
     this.props = {
       ...props,
       createdAt: props.createdAt ?? new Date(),
+      deletedAt: props.deleteAt ?? null,
     };
   }
 
