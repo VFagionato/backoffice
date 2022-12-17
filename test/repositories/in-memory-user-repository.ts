@@ -4,8 +4,9 @@ import { UserRepository } from '@app/repositories/user-repositorie';
 export class InMemoryUserRepository implements UserRepository {
   public users: User[] = [];
 
-  async create(user: User): Promise<void> {
+  async create(user: User): Promise<User> {
     this.users.push(user);
+    return user;
   }
 
   async findByID(userID: string): Promise<User | null> {
@@ -24,11 +25,11 @@ export class InMemoryUserRepository implements UserRepository {
     return user;
   }
 
-  async listAlluser(): Promise<User[]> {
+  async listAllusers(): Promise<User[] | []> {
     return this.users;
   }
 
-  async save(user: User): Promise<void> {
+  async update(user: User): Promise<void> {
     const userIndex = this.users.findIndex((item) => item.id === user.id);
 
     if (userIndex >= 0) {
