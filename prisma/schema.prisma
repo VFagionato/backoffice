@@ -19,6 +19,7 @@ model User {
   phone      String
   createdAt  DateTime  @default(now())
   deletedAt  DateTime?
+  updatedAt  DateTime?
 
   @@index([name, email])
 }

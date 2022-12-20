@@ -9,6 +9,7 @@ export interface UserProps {
   phone: string;
   createdAt: Date;
   deletedAt?: Date | null;
+  updatedAt?: Date | null;
 }
 
 export class User {
@@ -16,7 +17,10 @@ export class User {
   private props: UserProps;
 
   constructor(
-    props: Replace<UserProps, { createdAt?: Date; deleteAt?: Date }>,
+    props: Replace<
+      UserProps,
+      { createdAt?: Date; deleteAt?: Date; updatedAt?: Date | null }
+    >,
     id?: string,
   ) {
     this._id = id ?? randomUUID();
@@ -24,6 +28,7 @@ export class User {
       ...props,
       createdAt: props.createdAt ?? new Date(),
       deletedAt: props.deleteAt ?? null,
+      updatedAt: props.updatedAt ?? null,
     };
   }
 
@@ -75,7 +80,19 @@ export class User {
     return this.props.createdAt;
   }
 
+  public get updatedAt(): Date | null | undefined {
+    return this.props.updatedAt;
+  }
+
+  public get deletedAt(): Date | null | undefined {
+    return this.props.deletedAt;
+  }
+
   public softDelete() {
     this.props.deletedAt = new Date();
+  }
+
+  public update() {
+    this.props.updatedAt = new Date();
   }
 }
