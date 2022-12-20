@@ -25,6 +25,18 @@ export class InMemoryUserRepository implements UserRepository {
     return user;
   }
 
+  async findByName(userName: string): Promise<User[]> {
+    const users = this.users.filter((user) => {
+      if (user.name.includes(userName)) {
+        return true;
+      }
+
+      return false;
+    });
+
+    return users;
+  }
+
   async listAllusers(): Promise<User[] | []> {
     return this.users;
   }
