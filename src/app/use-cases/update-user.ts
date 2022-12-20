@@ -1,13 +1,10 @@
+import { UserProps } from '@app/entities/user';
 import { UserRepository } from '@app/repositories/user-repositorie';
 import { Encrypter } from '@helpers/Encripter';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-export interface UpdateUserRequest {
-  name: string;
-  password: string;
-  email: string;
-  permission: number;
-  phone: string;
+export interface UpdateUserRequest extends Partial<UserProps> {
+  targetId: string;
 }
 
 type UpdateUserResponse = void;
@@ -19,11 +16,10 @@ export class UpdateUser {
     private encrypter: Encrypter,
   ) {}
 
-  async execute(
-    userId: string,
-    request: Partial<UpdateUserRequest>,
-  ): Promise<UpdateUserResponse> {
-    const user = await this.repository.findByID(userId);
+  async execute(request: UpdateUserRequest): Promise<UpdateUserResponse> {
+    const { targetId } = request;
+
+    const user = await this.repository.findByID(targetId);
 
     if (!user) {
       throw new NotFoundException();

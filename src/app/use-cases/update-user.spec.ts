@@ -11,7 +11,8 @@ describe('Update Users', () => {
 
     const user = await userRepository.create(makeUser());
 
-    await updateUser.execute(user.id, {
+    await updateUser.execute({
+      targetId: user.id,
       name: 'new Name',
     });
 
