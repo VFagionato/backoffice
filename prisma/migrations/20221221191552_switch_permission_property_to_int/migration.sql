@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `User` MODIFY `permission` INTEGER NOT NULL DEFAULT 0;
