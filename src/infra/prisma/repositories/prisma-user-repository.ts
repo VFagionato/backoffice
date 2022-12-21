@@ -8,7 +8,10 @@ export class PrismaUserRepository implements UserRepository {
   findByID(userID: string): Promise<User | null> {
     throw new Error('Method not implemented.');
   }
-  findByEmail(userEmail: string): Promise<User | null> {
+  findByEmail(userEmail: string): Promise<User[]> {
+    throw new Error('Method not implemented.');
+  }
+  findByName(userName: string): Promise<User[]> {
     throw new Error('Method not implemented.');
   }
   listAllusers(): Promise<User[]> {
