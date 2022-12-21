@@ -11,7 +11,7 @@ export interface FindUserByNameResponse {
 }
 
 @Injectable()
-export class FindUserByName {
+export class FindByName {
   constructor(private repository: UserRepository) {}
 
   async execute(

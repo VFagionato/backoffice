@@ -1,14 +1,14 @@
 import { makeUser } from '@test/factories/user-factory';
 import { InMemoryUserRepository } from '@test/repositories/in-memory-user-repository';
-import { FindUserByName } from './find-user-by-name';
+import { FindByName } from './find-by-name';
 
 describe('Find User by Name', () => {
   let userRepository: InMemoryUserRepository;
-  let findUserByName: FindUserByName;
+  let findUserByName: FindByName;
 
   beforeEach(() => {
     userRepository = new InMemoryUserRepository();
-    findUserByName = new FindUserByName(userRepository);
+    findUserByName = new FindByName(userRepository);
   });
 
   it('should be able to find a user by name', async () => {
