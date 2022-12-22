@@ -1,7 +1,7 @@
 import { User } from '@app/entities/user';
 import { UserRepository } from '@app/repositories/user-repositorie';
 import { Encrypter } from '@helpers/Encripter';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 export interface CreateUserRequest {
   name: string;
@@ -23,7 +23,13 @@ export class CreateUser {
   ) {}
 
   async execute(request: CreateUserRequest): Promise<CreateUserResponse> {
-    const { password } = request;
+    const { password, email } = request;
+
+    const finded = await this.repository.findByEmail(email);
+
+    if (finded) {
+      throw new BadRequestException('email already exist');
+    }
 
     const hashedPassword = await this.encrypter.hash(password);
 

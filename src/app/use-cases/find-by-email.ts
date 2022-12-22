@@ -7,7 +7,7 @@ export interface FindByEmailRequest {
 }
 
 export interface FindByEmailResponse {
-  users: User[] | null;
+  user: User | null;
 }
 
 @Injectable()
@@ -16,12 +16,12 @@ export class FindByEmail {
 
   async execute(request: FindByEmailRequest): Promise<FindByEmailResponse> {
     const { email } = request;
-    const users = await this.repository.findByEmail(email);
+    const user = await this.repository.findByEmail(email);
 
-    if (!users.length) {
-      return { users: null };
+    if (!user) {
+      return { user: null };
     }
 
-    return { users };
+    return { user };
   }
 }
