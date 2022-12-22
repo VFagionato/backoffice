@@ -7,7 +7,7 @@ export interface UserProps {
   email: string;
   permission: number;
   phone: string;
-  createdAt: Date;
+  createdAt?: Date;
   deletedAt?: Date | null;
   updatedAt?: Date | null;
 }
@@ -16,19 +16,11 @@ export class User {
   private _id: string;
   private props: UserProps;
 
-  constructor(
-    props: Replace<
-      UserProps,
-      { createdAt?: Date; deleteAt?: Date; updatedAt?: Date | null }
-    >,
-    id?: string,
-  ) {
+  constructor(props: Replace<UserProps, { createdAt?: Date }>, id?: string) {
     this._id = id ?? randomUUID();
     this.props = {
       ...props,
       createdAt: props.createdAt ?? new Date(),
-      deletedAt: props.deleteAt ?? null,
-      updatedAt: props.updatedAt ?? null,
     };
   }
 
