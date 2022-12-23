@@ -1,3 +1,4 @@
+import { User } from '@app/entities/user';
 import { CreateUser } from '@app/use-cases/create-user';
 import { DeleteUser } from '@app/use-cases/delete-user';
 import { FindByEmail } from '@app/use-cases/find-by-email';
