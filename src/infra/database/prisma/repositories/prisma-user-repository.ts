@@ -8,14 +8,24 @@ import { PrismaUserMapper } from '../mappers/prisma-user-mapper';
 export class PrismaUserRepository implements UserRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(user: User): Promise<void> {
+  async create(user: User): Promise<User> {
     const raw = PrismaUserMapper.toPrisma(user);
-    await this.prisma.user.create({
+    const prismaUser = await this.prisma.user.create({
       data: raw,
     });
+
+    return PrismaUserMapper.toDomain(prismaUser);
   }
-  findByID(userID: string): Promise<User | null> {
-    throw new Error('Method not implemented.');
+  async findByID(userID: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userID },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return PrismaUserMapper.toDomain(user);
   }
   async findByEmail(userEmail: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
@@ -30,16 +40,27 @@ export class PrismaUserRepository implements UserRepository {
 
     return PrismaUserMapper.toDomain(user);
   }
-  findByName(userName: string): Promise<User[]> {
-    throw new Error('Method not implemented.');
+  async findByName(userName: string): Promise<User[]> {
+    const users = await this.prisma.user.findMany({
+      where: {
+        name: userName,
+      },
+    });
+
+    return users.map(PrismaUserMapper.toDomain);
   }
-  listAllusers(): Promise<User[]> {
-    throw new Error('Method not implemented.');
+  async listAllusers(): Promise<User[]> {
+    const users = await this.prisma.user.findMany();
+
+    return users.map(PrismaUserMapper.toDomain);
   }
-  update(user: User): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-  deleteUser(userID: string): Promise<void> {
-    throw new Error('Method not implemented.');
+  async update(user: User): Promise<void> {
+    const raw = PrismaUserMapper.toPrisma(user);
+    await this.prisma.user.update({
+      where: {
+        id: raw.id,
+      },
+      data: raw,
+    });
   }
 }

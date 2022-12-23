@@ -22,10 +22,12 @@ export class UpdateUser {
     const user = await this.repository.findByID(targetId);
 
     if (!user) {
-      throw new NotFoundException();
+      throw new NotFoundException('user not found');
     }
 
     for (const [key, value] of Object.entries(request)) {
+      if (key == 'targetId') continue;
+
       if (key === 'password') {
         const hashedPassword = await this.encrypter.hash(String(value));
         user.password = hashedPassword;

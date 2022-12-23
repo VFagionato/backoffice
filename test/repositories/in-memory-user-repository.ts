@@ -17,16 +17,14 @@ export class InMemoryUserRepository implements UserRepository {
     return user;
   }
 
-  async findByEmail(userEmail: string): Promise<User[]> {
-    const users = this.users.filter((user) => {
-      if (user.email.includes(userEmail)) {
-        return true;
-      }
+  async findByEmail(userEmail: string): Promise<User | null> {
+    const index = this.users.findIndex((user) => user.email === userEmail);
 
-      return false;
-    });
+    if (index < 0) {
+      return null;
+    }
 
-    return users;
+    return this.users[index];
   }
 
   async findByName(userName: string): Promise<User[]> {
@@ -51,10 +49,5 @@ export class InMemoryUserRepository implements UserRepository {
     if (userIndex >= 0) {
       this.users[userIndex] = user;
     }
-  }
-
-  async deleteUser(userID: string): Promise<void> {
-    const user = this.users.find((user) => user.id === userID);
-    user?.softDelete();
   }
 }

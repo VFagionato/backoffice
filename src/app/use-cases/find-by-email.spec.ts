@@ -18,13 +18,9 @@ describe('Find User by Name', () => {
     await userRepository.create(makeUser());
     await userRepository.create(makeUser());
 
-    const { users } = await findByEmail.execute({ email: 'target@mail.com' });
+    const { user } = await findByEmail.execute({ email: 'target@mail.com' });
 
-    expect(users).toHaveLength(1);
-
-    if (users) {
-      expect(users[0]).toEqual(createdUser);
-    }
+    expect(user).toEqual(createdUser);
   });
 
   it("should return null if don't find a users by name", async () => {
@@ -32,10 +28,10 @@ describe('Find User by Name', () => {
     await userRepository.create(makeUser());
     await userRepository.create(makeUser());
 
-    const { users } = await findByEmail.execute({
+    const { user } = await findByEmail.execute({
       email: 'invalid@mail.com',
     });
 
-    expect(users).toBeNull();
+    expect(user).toBeNull();
   });
 });
