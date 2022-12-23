@@ -8,6 +8,7 @@ import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
 import { User } from '@app/entities/user';
 import { Encrypter } from '@helpers/Encripter';
+import { makeUser } from '@test/factories/user-factory';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -24,12 +25,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     await this.user.deleteMany();
     this.logger.log('Formating database');
 
-    const root = new User({
+    const root = makeUser({
       name: 'root',
       password: await this.encrypter.hash('admin'),
       email: 'root@mail.com',
       permission: 1,
-      phone: '11947292091',
     });
 
     await this.user.create({
@@ -54,13 +54,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     this.logger.log('seeding DB 🌱');
 
     for (let i = 0; i <= 10; i++) {
-      const user = new User({
-        name: faker.internet.userName(),
-        password: faker.internet.password(),
-        email: faker.internet.email(),
-        permission: 0,
-        phone: faker.phone.number(),
-      });
+      const user = makeUser();
 
       await this.user.create({
         data: {
