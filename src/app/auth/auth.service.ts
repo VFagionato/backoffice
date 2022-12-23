@@ -29,13 +29,17 @@ export class AuthService {
     if (!isValid) {
       return null;
     }
-    const { password, ...result } = user;
 
-    return result;
+    return user;
   }
 
   async login(user: Partial<User>) {
-    const payload = { id: user.id };
+    const payload = {
+      sub: {
+        requesterId: user.id,
+        permission: user.permission,
+      },
+    };
     return {
       access_token: this.jwtService.sign(payload),
     };

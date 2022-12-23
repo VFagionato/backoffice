@@ -1,28 +1,37 @@
+import { JwtAuthGuard } from '@app/auth/jwt-auth.guard';
 import { User } from '@app/entities/user';
 import { CreateUser } from '@app/use-cases/create-user';
 import { DeleteUser } from '@app/use-cases/delete-user';
 import { FindByEmail } from '@app/use-cases/find-by-email';
+import { FindById } from '@app/use-cases/find-by-id';
 import { FindByName } from '@app/use-cases/find-by-name';
 import { ListUsers } from '@app/use-cases/list-users';
 import { UpdateUser } from '@app/use-cases/update-user';
+import { PrismaUserMapper } from '@infra/database/prisma/mappers/prisma-user-mapper';
 import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
+  Logger,
   NotFoundException,
   Param,
   Patch,
   Post,
   Query,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDTO } from '../dtos/create-user.dto';
 import { FindUserDTO } from '../dtos/find-user.dto';
 
 @Controller('/user')
 export class UserController {
+  private readonly logger = new Logger();
   constructor(
     private createUser: CreateUser,
+    private findById: FindById,
     private findByEmail: FindByEmail,
     private findByName: FindByName,
     private listUsers: ListUsers,
@@ -30,22 +39,42 @@ export class UserController {
     private deleteUser: DeleteUser,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async listAllUsers() {
     return await this.listUsers.execute();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('/:id')
+  async getById(@Param('id') id: string, @Request() req) {
+    const { user } = await this.findById.execute({ userId: id });
+
+    if (!user) {
+      throw new NotFoundException('user not found');
+    }
+
+    return { user };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async userUpdate(
     @Param('id') id: string,
     @Body() body: Partial<CreateUserDTO>,
+    @Request() req,
   ) {
+    const { requesterId, permission } = req.user;
+    if (permission === 0 && requesterId !== id) {
+      throw new ForbiddenException();
+    }
     await this.updateUser.execute({
       targetId: id,
       ...body,
     });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteAUser(@Param('id') id: string) {
     await this.deleteUser.execute({
@@ -53,7 +82,8 @@ export class UserController {
     });
   }
 
-  @Get('/find')
+  @UseGuards(JwtAuthGuard)
+  @Get('/users/find')
   async getByEmailOrName(@Query() query: FindUserDTO) {
     const { email, name } = query;
 
@@ -77,6 +107,7 @@ export class UserController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() body: CreateUserDTO) {
     const { email, name, password, permission, phone } = body;
