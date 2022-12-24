@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
-import { User } from '@app/entities/user';
 import { Encrypter } from '@helpers/Encripter';
 import { makeUser } from '@test/factories/user-factory';
 
