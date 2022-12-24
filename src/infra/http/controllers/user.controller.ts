@@ -1,5 +1,5 @@
 import { JwtAuthGuard } from '@app/auth/jwt-auth.guard';
-import { User } from '@app/entities/user';
+import { Roles } from '@app/auth/roles.decorator';
 import { CreateUser } from '@app/use-cases/create-user';
 import { DeleteUser } from '@app/use-cases/delete-user';
 import { FindByEmail } from '@app/use-cases/find-by-email';
@@ -7,12 +7,10 @@ import { FindById } from '@app/use-cases/find-by-id';
 import { FindByName } from '@app/use-cases/find-by-name';
 import { ListUsers } from '@app/use-cases/list-users';
 import { UpdateUser } from '@app/use-cases/update-user';
-import { PrismaUserMapper } from '@infra/database/prisma/mappers/prisma-user-mapper';
 import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   Logger,
   NotFoundException,
@@ -41,12 +39,14 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
+  @Roles('admin')
   async listAllUsers() {
     return await this.listUsers.execute();
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/:id')
+  @Roles('admin', 'user')
   async getById(@Param('id') id: string, @Request() req) {
     const { user } = await this.findById.execute({ userId: id });
 
@@ -59,15 +59,11 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
+  @Roles('admin', 'user')
   async userUpdate(
     @Param('id') id: string,
     @Body() body: Partial<CreateUserDTO>,
-    @Request() req,
   ) {
-    const { requesterId, permission } = req.user;
-    if (permission === 0 && requesterId !== id) {
-      throw new ForbiddenException();
-    }
     await this.updateUser.execute({
       targetId: id,
       ...body,
@@ -76,6 +72,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
+  @Roles('admin', 'user')
   async deleteAUser(@Param('id') id: string) {
     await this.deleteUser.execute({
       targetId: id,
@@ -84,6 +81,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/users/find')
+  @Roles('admin')
   async getByEmailOrName(@Query() query: FindUserDTO) {
     const { email, name } = query;
 
@@ -109,7 +107,8 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() body: CreateUserDTO) {
+  @Roles('admin')
+  async create(@Body() body: CreateUserDTO, @Request() req) {
     const { email, name, password, permission, phone } = body;
 
     const { user } = await this.createUser.execute({

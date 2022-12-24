@@ -54,7 +54,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     this.logger.log('seeding DB 🌱');
 
     for (let i = 0; i <= 10; i++) {
-      const user = makeUser();
+      const user = makeUser({
+        password: await this.encrypter.hash(faker.internet.password()),
+      });
 
       await this.user.create({
         data: {
