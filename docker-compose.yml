@@ -17,13 +17,17 @@ services:
 
   app:
     build: .
-    command: npm run start
+    command: >
+      sh -c "npx prisma db push && npm run start:dev"
+    env_file:
+      - .env
     depends_on:
       - db
     ports:
       - "80:3000"
     volumes:
       - .:/usr/src/app
+      - ./prisma:/usr/src/app
 
 volumes:
   database:

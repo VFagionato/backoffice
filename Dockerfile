@@ -6,6 +6,12 @@ COPY package*.json ./
 
 RUN npm install
 
+COPY ./prisma /usr/src/app/prisma
+
+RUN npx prisma generate
+
+RUN npx prisma migrate
+
 COPY . .
 
 RUN npm run build
