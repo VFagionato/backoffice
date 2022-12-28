@@ -38,15 +38,23 @@ export class UserController {
   ) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get()
+  @Get('/index')
   @Roles('admin')
   async listAllUsers() {
     return await this.listUsers.execute();
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('')
+  async returnUser(@Request() req) {
+    const { requesterId } = req.user.payload;
+
+    return await this.findById.execute({ userId: requesterId });
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('/:id')
-  @Roles('admin', 'user')
+  @Roles('admin')
   async getById(@Param('id') id: string, @Request() req) {
     const { user } = await this.findById.execute({ userId: id });
 
