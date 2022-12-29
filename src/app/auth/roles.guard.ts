@@ -31,7 +31,7 @@ export class RoleGuard implements CanActivate {
     }
 
     if (user) {
-      return this.isEqual(requesterId, targetId);
+      this.isUser(requesterId, targetId, request);
     }
 
     return false;
@@ -41,11 +41,17 @@ export class RoleGuard implements CanActivate {
     return true;
   }
 
-  isEqual(requesterId: string, targetId: string): boolean {
-    if (requesterId === targetId) {
-      return true;
+  isUser(requesterId: string, targetId: string, request: any): boolean {
+    const { permission } = request.body;
+
+    if (permission) {
+      return false;
     }
 
-    return false;
+    if (requesterId !== targetId) {
+      return false;
+    }
+
+    return true;
   }
 }
