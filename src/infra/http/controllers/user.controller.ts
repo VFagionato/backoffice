@@ -45,6 +45,33 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('/find')
+  @Roles('admin')
+  async getByEmailOrName(@Query() query: FindUserDTO) {
+    this.logger.debug('oi');
+    const { email, name } = query;
+
+    if (email) {
+      const { user } = await this.findByEmail.execute({ email });
+      if (!user) {
+        throw new NotFoundException('no user found with that email');
+      }
+
+      return { user };
+    }
+
+    if (name) {
+      const { users } = await this.findByName.execute({ name });
+
+      if (!users) {
+        throw new NotFoundException('no users found with that name');
+      }
+
+      return { users };
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('')
   async returnUser(@Request() req) {
     const { requesterId } = req.user.payload;
@@ -85,32 +112,6 @@ export class UserController {
     await this.deleteUser.execute({
       targetId: id,
     });
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('/users/find')
-  @Roles('admin')
-  async getByEmailOrName(@Query() query: FindUserDTO) {
-    const { email, name } = query;
-
-    if (email) {
-      const { user } = await this.findByEmail.execute({ email });
-      if (!user) {
-        throw new NotFoundException('no user found with that email');
-      }
-
-      return { user };
-    }
-
-    if (name) {
-      const { users } = await this.findByName.execute({ name });
-
-      if (!users) {
-        throw new NotFoundException('no users found with that name');
-      }
-
-      return { users };
-    }
   }
 
   @UseGuards(JwtAuthGuard)
