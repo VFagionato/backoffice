@@ -21,6 +21,27 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
   async onModuleInit() {
     await this.$connect();
+
+    const users = await this.user.findMany();
+
+    if (!users.length) {
+      await this.cleanAndPopulate();
+      return;
+    }
+
+    this.logger.warn('Database already populated');
+    this.logger.warn(
+      'if you want to rebase, go to src/infra/database/prisma/prisma.service.ts, edit the "onModuleInit()" function.',
+    );
+  }
+
+  async enableShutdownHooks(app: INestApplication) {
+    this.$on('beforeExit', async () => {
+      await app.close();
+    });
+  }
+
+  async cleanAndPopulate() {
     await this.user.deleteMany();
     this.logger.log('Formating database');
 
@@ -71,11 +92,5 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     }
 
     this.logger.log('Database already seeded');
-  }
-
-  async enableShutdownHooks(app: INestApplication) {
-    this.$on('beforeExit', async () => {
-      await app.close();
-    });
   }
 }
