@@ -22,9 +22,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   async onModuleInit() {
     await this.$connect();
 
-    const users = await this.user.findMany();
+    // const users = await this.user.findMany();
+    const users = null;
 
-    if (!users.length) {
+    if (!users) {
       await this.cleanAndPopulate();
       return;
     }
