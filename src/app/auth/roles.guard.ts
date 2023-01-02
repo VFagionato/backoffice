@@ -36,7 +36,7 @@ export class RoleGuard implements CanActivate {
     }
 
     if (user) {
-      this.isUser(requesterId, targetId, request);
+      return this.isUser(requesterId, targetId, request);
     }
 
     return false;
