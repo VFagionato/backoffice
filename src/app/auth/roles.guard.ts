@@ -20,6 +20,11 @@ export class RoleGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const { params } = request;
     const { authorization } = request.headers;
+
+    if (!authorization) {
+      return false;
+    }
+
     const token = authorization.split(' ').pop();
     const payload = this.jwtService.decode(token);
     const permission = payload ? payload['sub'].permission : null;
@@ -31,7 +36,7 @@ export class RoleGuard implements CanActivate {
     }
 
     if (user) {
-      this.isUser(requesterId, targetId, request);
+      return this.isUser(requesterId, targetId, request);
     }
 
     return false;
@@ -51,7 +56,6 @@ export class RoleGuard implements CanActivate {
     if (requesterId !== targetId) {
       return false;
     }
-
     return true;
   }
 }

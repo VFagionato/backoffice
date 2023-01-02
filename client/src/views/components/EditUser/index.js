@@ -1,22 +1,49 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux"
-import { Button, Card, Form } from 'react-bootstrap'
+import { Button, Card, Form, Spinner } from 'react-bootstrap'
 import { fetchUserById } from '../../../redux/slices/user.slices'
 import { useForm } from 'react-hook-form'
+import { api } from '../../../services/api'
 
 const EditUser = () => {
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const { user } = useSelector(state => state.userData)
-  const { register, handleSubmit, formState: { errors } } = useForm()
+  const { register, handleSubmit, reset } = useForm()
   const dispatch = useDispatch()
 
   const submit = async (data) => {
-    console.log(data)
+    for (const [key, value] of Object.entries(data)) {
+      if (!value.length) {
+        delete data[key]
+      }
+    }
+
+    setIsLoading(true)
+    const response = await api.patch(`/user/${user.id}`, { ...data }, {
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('access_token')}`
+      }
+    }).catch(error => {
+      const { response } = error
+      setErrorMessage(response.message)
+      setIsLoading(false)
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 3000)
+      return false
+    })
+
+    if (!response) return
+    setIsLoading(false)
+    dispatch(fetchUserById())
+    reset()
   }
 
   const createFilds = () => {
     return Object.entries(user).filter(element => {
-      const [name] = element
-      if (name === 'permission' || name === 'id' || name === 'createdAt') return false
+      const [name, value] = element
+      if ((name === 'permission' && value === 0) || name === 'id' || name === 'createdAt') return false
       return true
     })
   }
@@ -28,11 +55,16 @@ const EditUser = () => {
     }
 
     if (types[keyName]) {
-      console.log(keyName, types[keyName])
       return types[keyName]
     }
 
     return
+  }
+
+  const createLocaleDate = (createdAt) => {
+    const date = new Date(createdAt)
+    const browserLang = navigator.language
+    return date.toLocaleString(browserLang)
   }
 
   useEffect(() => {
@@ -42,25 +74,33 @@ const EditUser = () => {
 
   return (
     <>
-      <Card className='p-3'>
-        <Form onSubmit={(handleSubmit(submit))}>
-          {createFilds(user).map((item, index) => {
-            const [name, value] = item
-            return (
-              <Form.Group className='mb-2' key={index}>
-                <Form.Label>{name[0].toUpperCase() + name.slice(1)}</Form.Label>
-                <Form.Control
-                  type={defineType(name)}
-                  placeholder={name === 'password' ? 'new password' : value}
-                  {...register(name)}
-                />
-              </Form.Group>
-            )
-          })}
-          <Button variant="primary" type='submite'>
-            Submit
-          </Button>
-        </Form>
+      <Card className='p-3 mb-3'>
+        <Card.Header>
+          <Card.Title style={{ fontSize: 12 }}>
+            Member since: {createLocaleDate(user.createdAt)}
+          </Card.Title>
+        </Card.Header>
+        <Card.Body>
+          <Form onSubmit={(handleSubmit(submit))}>
+            {createFilds(user).map((item, index) => {
+              const [name, value] = item
+              return (
+                <Form.Group className='mb-2' key={index}>
+                  <Form.Label>{name[0].toUpperCase() + name.slice(1)}</Form.Label>
+                  <Form.Control
+                    type={defineType(name)}
+                    placeholder={name === 'password' ? 'new password' : value}
+                    {...register(name)}
+                  />
+                </Form.Group>
+              )
+            })}
+            {!!errorMessage.length && <Card.Text>{errorMessage}</Card.Text>}
+            <Button variant="primary" type='submite'>
+              {isLoading ? <Spinner animation='border' /> : 'Submit'}
+            </Button>
+          </Form>
+        </Card.Body>
       </Card>
     </>
   )

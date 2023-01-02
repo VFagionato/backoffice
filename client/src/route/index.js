@@ -3,11 +3,11 @@ import Login from "../views/Login";
 
 export const routes = [
   {
-    path: '/',
+    path: '/login',
     element: <Login />
   },
   {
-    path: '/dashboard',
+    path: '/',
     element: <Dashboard />
   }
 ]

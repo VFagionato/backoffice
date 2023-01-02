@@ -38,7 +38,7 @@ function Login() {
 
     dispatch(fetchUserById())
 
-    navegate('/dashboard')
+    navegate('/')
   }
 
   return (

@@ -72,7 +72,7 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('')
+  @Get()
   async returnUser(@Request() req) {
     const { requesterId } = req.user.payload;
 

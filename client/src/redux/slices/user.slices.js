@@ -8,7 +8,8 @@ const initialState = {
     phone: '',
     permisson: 0,
     createdAt: ''
-  }
+  },
+  users: []
 }
 
 export const fetchUserById = createAsyncThunk('user', async (userId = null) => {
@@ -41,6 +42,22 @@ export const fetchUserById = createAsyncThunk('user', async (userId = null) => {
 
 })
 
+export const fetchUsers = createAsyncThunk('users', async () => {
+  const response = await api.get('/user/index', {
+    headers: {
+      authorization: `Bearer ${localStorage.getItem('access_token')}`
+    }
+  }).catch(error => {
+    return false
+  })
+
+  if (!response) return []
+
+  const { data } = response
+
+  return data.users
+})
+
 export const userSlice = createSlice({
   name: 'userData',
   initialState,
@@ -52,6 +69,10 @@ export const userSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchUserById.fulfilled, (state, action) => {
       state.user = { ...action.payload }
+    })
+
+    builder.addCase(fetchUsers.fulfilled, (state, action) => {
+      state.users = action.payload
     })
   }
 })
