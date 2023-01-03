@@ -1,7 +1,7 @@
 import { UserProps } from '@app/entities/user';
 import { UserRepository } from '@app/repositories/user-repositorie';
 import { Encrypter } from '@helpers/Encripter';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 export interface UpdateUserRequest extends Partial<UserProps> {
   targetId: string;
@@ -11,6 +11,7 @@ type UpdateUserResponse = void;
 
 @Injectable()
 export class UpdateUser {
+  private readonly logger = new Logger('UpdateUser-UseCase');
   constructor(
     private repository: UserRepository,
     private encrypter: Encrypter,
@@ -31,6 +32,7 @@ export class UpdateUser {
       if (key === 'password') {
         const hashedPassword = await this.encrypter.hash(String(value));
         user.password = hashedPassword;
+        continue;
       }
 
       user[key] = value;

@@ -56,7 +56,6 @@ export class RoleGuard implements CanActivate {
     if (requesterId !== targetId) {
       return false;
     }
-
     return true;
   }
 }
