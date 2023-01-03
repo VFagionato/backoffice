@@ -21,9 +21,17 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiProperty,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateUserDTO } from '../dtos/create-user.dto';
 import { FindUserDTO } from '../dtos/find-user.dto';
 
+@ApiTags('user')
 @Controller('/user')
 export class UserController {
   private readonly logger = new Logger();
@@ -37,6 +45,7 @@ export class UserController {
     private deleteUser: DeleteUser,
   ) {}
 
+  @ApiBearerAuth('access_token')
   @UseGuards(JwtAuthGuard)
   @Get('/index')
   @Roles('admin')
@@ -44,6 +53,19 @@ export class UserController {
     return await this.listUsers.execute();
   }
 
+  @ApiBearerAuth('access_token')
+  @ApiQuery({
+    name: 'name',
+    required: false,
+    type: 'string',
+    example: 'root',
+  })
+  @ApiQuery({
+    name: 'email',
+    required: false,
+    type: 'string',
+    example: 'root@mail.com',
+  })
   @UseGuards(JwtAuthGuard)
   @Get('/find')
   @Roles('admin')
@@ -71,6 +93,7 @@ export class UserController {
     }
   }
 
+  @ApiBearerAuth('access_token')
   @UseGuards(JwtAuthGuard)
   @Get()
   async returnUser(@Request() req) {
@@ -79,6 +102,7 @@ export class UserController {
     return await this.findById.execute({ userId: requesterId });
   }
 
+  @ApiBearerAuth('access_token')
   @UseGuards(JwtAuthGuard)
   @Get('/:id')
   @Roles('admin')
@@ -92,6 +116,16 @@ export class UserController {
     return { user };
   }
 
+  @ApiBearerAuth('access_token')
+  @ApiBody({
+    schema: {
+      example: {
+        name: 'new Name',
+        email: 'new@mail.com',
+        password: 'newPassword',
+      },
+    },
+  })
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @Roles('admin', 'user')
@@ -105,6 +139,7 @@ export class UserController {
     });
   }
 
+  @ApiBearerAuth('access_token')
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @Roles('admin', 'user')
@@ -114,6 +149,7 @@ export class UserController {
     });
   }
 
+  @ApiBearerAuth('access_token')
   @UseGuards(JwtAuthGuard)
   @Post()
   @Roles('admin')
