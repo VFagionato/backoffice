@@ -1,7 +1,7 @@
 import { AuthService } from '@app/auth/auth.service';
 import { LocalAuthGuard } from '@app/auth/local-auth.guard';
 import { Controller, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiParam } from '@nestjs/swagger';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
