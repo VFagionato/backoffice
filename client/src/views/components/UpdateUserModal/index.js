@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Form, Modal } from "react-bootstrap";
+import { Button, Form, Modal, Toast, ToastContainer } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { fetchUsers } from "../../../redux/slices/user.slices";
@@ -9,6 +9,8 @@ const UpdateUserModal = ({ id, onHide, show = false, funcToClose }) => {
   const [user, setUser] = useState({})
   const { register, handleSubmit, reset } = useForm()
   const dispatch = useDispatch()
+  const [showToast, setShowToast] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const submit = async (data) => {
     for (const [key, value] of Object.entries(data)) {
@@ -22,7 +24,11 @@ const UpdateUserModal = ({ id, onHide, show = false, funcToClose }) => {
         authorization: `Bearer ${localStorage.getItem('access_token')}`
       }
     }).catch(error => {
-      return false
+      const { response } = error
+
+      setShowToast(true)
+      setErrorMessage(response.message)
+
     })
 
     if (!response) return
@@ -110,6 +116,14 @@ const UpdateUserModal = ({ id, onHide, show = false, funcToClose }) => {
           </Button>
         </Form>
       </Modal.Body>
+      <ToastContainer className="p-3" position="top-start">
+        <Toast show={showToast} onClose={() => setShowToast(false)}>
+          <Toast.Header closeButton>
+            Error
+          </Toast.Header>
+          <Toast.Body>{errorMessage}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </Modal>
   )
 }

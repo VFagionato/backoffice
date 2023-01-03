@@ -103,8 +103,18 @@ const UserList = () => {
         <DataTable highlightOnHover columns={columns} data={users} />
       </Card.Body>
     </Card>
-    <UpdateUserModal show={updateModal} onHide={() => setUpdateModal(false)} id={toUpdateId} funcToClose={setUpdateModal} />
-    <DeleteUserModal show={deleteModal} onHide={() => setDeletModal(false)} id={toDeleteId} funcToClose={setDeletModal} />
+    <UpdateUserModal
+      show={updateModal}
+      onHide={() => setUpdateModal(false)}
+      id={toUpdateId}
+      funcToClose={setUpdateModal}
+    />
+    <DeleteUserModal
+      show={deleteModal}
+      onHide={() => setDeletModal(false)}
+      id={toDeleteId}
+      funcToClose={setDeletModal}
+    />
   </>)
 }
 

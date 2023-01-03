@@ -61,12 +61,6 @@ const EditUser = () => {
     return
   }
 
-  const createLocaleDate = (createdAt) => {
-    const date = new Date(createdAt)
-    const browserLang = navigator.language
-    return date.toLocaleString(browserLang)
-  }
-
   useEffect(() => {
     dispatch(fetchUserById())
   }, [])
@@ -76,8 +70,8 @@ const EditUser = () => {
     <>
       <Card className='p-3 mb-3'>
         <Card.Header>
-          <Card.Title style={{ fontSize: 12 }}>
-            Member since: {createLocaleDate(user.createdAt)}
+          <Card.Title >
+            Profile
           </Card.Title>
         </Card.Header>
         <Card.Body>
